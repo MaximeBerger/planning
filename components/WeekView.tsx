@@ -38,7 +38,7 @@ export default function WeekView({ events }: WeekViewProps) {
   // Filtrer les événements pour la semaine en cours
   const weekEvents = events.filter(event => {
     const eventDate = new Date(event.start);
-    return eventDate >= weekStart && eventDate < new Date(weekStart.getTime() + 5 * 24 * 60 * 60 * 1000);
+    return eventDate >= new Date(weekStart.getTime() - 24 * 60 * 60 * 1000) && eventDate < new Date(weekStart.getTime() + 5 * 24 * 60 * 60 * 1000);
   });
 
   // Calculer la position et la hauteur de chaque événement
@@ -103,9 +103,8 @@ export default function WeekView({ events }: WeekViewProps) {
               key={day}
               className="flex-1 text-center py-2 border-r bg-gray-100"
             >
-              <div className="font-semibold text-gray-900">{day}</div>
-              <div className="text-sm font-medium text-blue-600">
-                {weekDays[index].toLocaleDateString('fr-FR', { day: 'numeric' })}
+              <div className="font-semibold text-gray-900">
+                {day} {weekDays[index].toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })}
               </div>
             </div>
           ))}
