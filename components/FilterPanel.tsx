@@ -21,24 +21,48 @@ export default function FilterPanel({
   onCategoriesChange
 }: FilterPanelProps) {
   return (
-    <div className="p-4">
-      <h2 className="text-lg font-semibold mb-4 text-gray-900">Filtres</h2>
+    <div className="p-6">
+      <h2 className="text-xl font-semibold mb-6 text-gray-900">Filtres</h2>
       
-      {categories.map(category => (
-        <div key={category} className="mb-6">
-          <h3 className="font-medium mb-3 text-gray-800 border-b pb-1">{category}</h3>
-          <div className="space-y-3">
-            {hierarchicalOptions[category as keyof typeof hierarchicalOptions].map(group => (
-              <FilterGroup
-                key={group.title}
-                group={group}
-                selectedCategories={selectedCategories}
-                onCategoriesChange={onCategoriesChange}
-              />
-            ))}
+      <div className="grid grid-cols-3 gap-6">
+        {categories.map(category => (
+          <div key={category} className="col-span-1">
+            <h3 className="font-medium mb-4 text-gray-800 border-b pb-2">{category}</h3>
+            <div className="space-y-4">
+              {category === 'Formateurs' ? (
+                <div className="space-y-2">
+                  {hierarchicalOptions[category][0]?.items.map((item: string) => (
+                    <label key={item} className="flex items-center space-x-2 py-0.5">
+                      <input
+                        type="checkbox"
+                        checked={selectedCategories.includes(item)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            onCategoriesChange([...selectedCategories, item]);
+                          } else {
+                            onCategoriesChange(selectedCategories.filter(cat => cat !== item));
+                          }
+                        }}
+                        className="form-checkbox h-4 w-4 text-blue-600"
+                      />
+                      <span className="text-gray-800">{item}</span>
+                    </label>
+                  ))}
+                </div>
+              ) : (
+                hierarchicalOptions[category as keyof typeof hierarchicalOptions].map(group => (
+                  <FilterGroup
+                    key={group.title}
+                    group={group}
+                    selectedCategories={selectedCategories}
+                    onCategoriesChange={onCategoriesChange}
+                  />
+                ))
+              )}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }

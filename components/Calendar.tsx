@@ -87,7 +87,7 @@ export default function Calendar() {
       
       <div 
         className={`absolute top-0 right-0 h-full bg-white border-l border-gray-200 transition-all duration-300 cursor-pointer ${
-          isFilterPanelOpen ? 'w-96 translate-x-0' : 'w-64 translate-x-full'
+          isFilterPanelOpen ? 'w-4/5 translate-x-0' : 'w-64 translate-x-full'
         }`}
         onClick={(e) => {
           e.stopPropagation();
