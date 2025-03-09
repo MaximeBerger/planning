@@ -1,3 +1,41 @@
+interface HierarchicalItem {
+  title: string;
+  items: string[];
+  subgroups: HierarchicalItem[];
+}
+
+function organizeItems(items: string[]): HierarchicalItem[] {
+  const result: HierarchicalItem[] = [];
+  const mainSections = ['ING_PGE1D', 'ING_PGE2D'];
+  
+  // Créer les sections principales
+  mainSections.forEach(section => {
+    const sectionItems = items.filter(item => item.startsWith(section) && item !== section);
+    if (sectionItems.length > 0) {
+      result.push({
+        title: section,
+        items: sectionItems,
+        subgroups: []
+      });
+    }
+  });
+
+  // Ajouter les items qui ne correspondent à aucune section
+  const remainingItems = items.filter((item: string) => 
+    !mainSections.some(section => item.startsWith(section))
+  );
+
+  if (remainingItems.length > 0) {
+    result.push({
+      title: 'Autres',
+      items: remainingItems,
+      subgroups: []
+    });
+  }
+
+  return result;
+}
+
 export interface ParsedDescription {
   Ressources: string[];
   Formateurs: string[];
@@ -40,10 +78,11 @@ export function parseDescriptionString(description: string | undefined): ParsedD
 
 export function extractUniqueCategories(events: { description?: string }[]): {
   categories: string[];
-  filterOptions: {
-    Ressources: string[];
-    Formateurs: string[];
-    Groupes: string[];
+  filterOptions: ParsedDescription;
+  hierarchicalOptions: {
+    Ressources: HierarchicalItem[];
+    Formateurs: HierarchicalItem[];
+    Groupes: HierarchicalItem[];
   };
 } {
   const allCategories = ['Ressources', 'Formateurs', 'Groupes'];
@@ -57,19 +96,26 @@ export function extractUniqueCategories(events: { description?: string }[]): {
     if (event.description) {
       const parsed = parseDescriptionString(event.description);
       Object.entries(parsed).forEach(([category, items]) => {
-        items.forEach(item => {
+        items.forEach((item: string) => {
           uniqueItems[category as keyof typeof uniqueItems].add(item);
         });
       });
     }
   });
 
+  const filterOptions = {
+    Ressources: Array.from(uniqueItems.Ressources),
+    Formateurs: Array.from(uniqueItems.Formateurs),
+    Groupes: Array.from(uniqueItems.Groupes)
+  };
+
   return {
     categories: allCategories,
-    filterOptions: {
-      Ressources: Array.from(uniqueItems.Ressources),
-      Formateurs: Array.from(uniqueItems.Formateurs),
-      Groupes: Array.from(uniqueItems.Groupes)
+    filterOptions,
+    hierarchicalOptions: {
+      Ressources: [],
+      Formateurs: [],
+      Groupes: organizeItems(filterOptions.Groupes)
     }
   };
 } 
