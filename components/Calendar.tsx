@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react';
 import ICAL from 'ical.js';
 import WeekView from './WeekView';
 import FilterPanel from './FilterPanel';
+import { parseDescriptionString, extractUniqueCategories } from '../utils/stringParser';
 
-interface Event {
+export interface Event {
   title: string;
   start: Date;
   end: Date;
@@ -63,7 +64,7 @@ export default function Calendar() {
 
   const filteredEvents = events.filter(event => 
     selectedCategories.length === 0 || 
-    (event.category && selectedCategories.includes(event.category))
+    (event.description && selectedCategories.some(category => event.description.includes(category)))
   );
 
   if (loading) {
@@ -73,6 +74,10 @@ export default function Calendar() {
   if (error) {
     return <div className="p-4 text-red-500">{error}</div>;
   }
+
+  const { categories, filterOptions } = extractUniqueCategories(events);
+
+  console.log("events", events.map((event) => parseDescriptionString(event.description)));
 
   return (
     <div className="relative" onClick={() => setIsFilterPanelOpen(false)}>
@@ -91,6 +96,8 @@ export default function Calendar() {
       >
         <FilterPanel 
           events={events}
+          categories={categories}
+          filterOptions={filterOptions}
           selectedCategories={selectedCategories}
           onCategoriesChange={setSelectedCategories}
         />
