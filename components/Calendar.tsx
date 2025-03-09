@@ -86,7 +86,7 @@ export default function Calendar() {
       </div>
       
       <div 
-        className={`absolute top-0 right-0 h-full bg-white border-l border-gray-200 transition-all duration-300 cursor-pointer ${
+        className={`absolute top-0 right-0 h-full bg-white bg-opacity-60 backdrop-blur-sm border-l border-gray-200 transition-all duration-300 cursor-pointer ${
           isFilterPanelOpen ? 'w-4/5 translate-x-0' : 'w-64 translate-x-full'
         }`}
         onClick={(e) => {
@@ -101,6 +101,7 @@ export default function Calendar() {
           hierarchicalOptions={hierarchicalOptions}
           selectedCategories={selectedCategories}
           onCategoriesChange={setSelectedCategories}
+          isOpen={isFilterPanelOpen}
         />
       </div>
     </div>
