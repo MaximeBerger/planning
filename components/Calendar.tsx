@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import ICAL from 'ical.js';
 import WeekView from './WeekView';
+import FilterPanel from './FilterPanel';
 
 interface Event {
   title: string;
@@ -10,12 +11,15 @@ interface Event {
   end: Date;
   description?: string;
   location?: string;
+  category?: string;
 }
 
 export default function Calendar() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(true);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchCalendar = async () => {
@@ -33,12 +37,15 @@ export default function Calendar() {
         
         const parsedEvents = vevents.map(vevent => {
           const event = new ICAL.Event(vevent);
+          const component = event.component;
+          const categoryValue = component.getFirstPropertyValue('categories');
           return {
             title: event.summary,
             start: event.startDate.toJSDate(),
             end: event.endDate.toJSDate(),
             description: event.description,
-            location: event.location
+            location: event.location,
+            category: categoryValue ? String(categoryValue) : undefined
           };
         });
 
@@ -54,6 +61,11 @@ export default function Calendar() {
     fetchCalendar();
   }, []);
 
+  const filteredEvents = events.filter(event => 
+    selectedCategories.length === 0 || 
+    (event.category && selectedCategories.includes(event.category))
+  );
+
   if (loading) {
     return <div className="p-4">Chargement du calendrier...</div>;
   }
@@ -63,8 +75,26 @@ export default function Calendar() {
   }
 
   return (
-    <div className="p-4">
-      <WeekView events={events} />
+    <div className="relative" onClick={() => setIsFilterPanelOpen(false)}>
+      <div className={`p-4 transition-all duration-300 ${isFilterPanelOpen ? 'blur-sm' : ''}`}>
+        <WeekView events={filteredEvents} />
+      </div>
+      
+      <div 
+        className={`absolute top-0 right-0 h-full bg-white border-l border-gray-200 transition-all duration-300 cursor-pointer ${
+          isFilterPanelOpen ? 'w-96 translate-x-0' : 'w-64 translate-x-full'
+        }`}
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsFilterPanelOpen(true);
+        }}
+      >
+        <FilterPanel 
+          events={events}
+          selectedCategories={selectedCategories}
+          onCategoriesChange={setSelectedCategories}
+        />
+      </div>
     </div>
   );
 } 
