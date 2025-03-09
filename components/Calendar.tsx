@@ -64,7 +64,7 @@ export default function Calendar() {
 
   const filteredEvents = events.filter(event => 
     selectedCategories.length === 0 || 
-    (event.description && selectedCategories.some(category => event.description.includes(category)))
+    selectedCategories.some(category => event.description?.includes(category) ?? false)
   );
 
   if (loading) {
