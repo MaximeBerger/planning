@@ -75,7 +75,7 @@ export default function Calendar() {
     return <div className="p-4 text-red-500">{error}</div>;
   }
 
-  const { categories, filterOptions } = extractUniqueCategories(events);
+  const { categories, filterOptions, hierarchicalOptions } = extractUniqueCategories(events);
 
   console.log("events", events.map((event) => parseDescriptionString(event.description)));
 
@@ -98,6 +98,7 @@ export default function Calendar() {
           events={events}
           categories={categories}
           filterOptions={filterOptions}
+          hierarchicalOptions={hierarchicalOptions}
           selectedCategories={selectedCategories}
           onCategoriesChange={setSelectedCategories}
         />
