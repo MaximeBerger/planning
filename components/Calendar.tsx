@@ -19,7 +19,7 @@ export default function Calendar() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(true);
+  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   useEffect(() => {
