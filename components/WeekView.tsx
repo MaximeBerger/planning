@@ -63,12 +63,19 @@ export default function WeekView({ events }: WeekViewProps) {
     const pixelsPerMinute = CELL_HEIGHT / 60;
     const topPosition = startFromSevenAM * pixelsPerMinute;
     const height = durationInMinutes * pixelsPerMinute;
+
+    // Calculer la largeur et la position horizontale
+    const isHalfWidth = event.description?.endsWith('/2') ?? false;
+    const columnWidth = 100 / 5; // 20% pour chaque jour
+    const isGroup2 = event.description?.endsWith('2/2') ?? false;
+    const width = isHalfWidth ? columnWidth / 2 : columnWidth;
+    const left = dayIndex * columnWidth + (isGroup2 ? columnWidth / 2 : 0);
     
     return {
       top: `${topPosition}px`,
       height: `${height}px`,
-      left: `${(dayIndex / 5) * 100}%`,
-      width: `${100 / 5}%`,
+      left: `${left}%`,
+      width: `${width}%`
     };
   };
 
@@ -142,21 +149,24 @@ export default function WeekView({ events }: WeekViewProps) {
               </div>
 
               {/* Événements */}
-              {weekEvents.map((event, index) => (
-                <div
-                  key={index}
-                  className="absolute bg-blue-50 border border-blue-200 rounded p-1 text-xs overflow-hidden hover:bg-blue-100 transition-colors"
-                  style={getEventStyle(event)}
-                >
-                  <div className="font-semibold text-blue-900">{event.title}</div>
-                  <div className="text-blue-700">
-                    {new Date(event.start).toLocaleTimeString('fr-FR', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
+              {weekEvents.map((event, index) => {
+                const style = getEventStyle(event);
+                return (
+                  <div
+                    key={index}
+                    className="absolute bg-blue-50 border border-blue-200 rounded p-1 text-xs overflow-hidden hover:bg-blue-100 transition-colors"
+                    style={style}
+                  >
+                    <div className="font-semibold text-blue-900">{event.title}</div>
+                    <div className="text-blue-700">
+                      {new Date(event.start).toLocaleTimeString('fr-FR', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
