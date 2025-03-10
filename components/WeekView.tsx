@@ -18,8 +18,32 @@ const HOURS = Array.from({ length: 13 }, (_, i) => i + 7); // 7h à 19h
 const DAYS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
 const CELL_HEIGHT = 48; // hauteur d'une cellule en pixels
 
+// Palette de couleurs harmonieuses
+const EVENT_COLORS = [
+  { bg: 'bg-blue-100 hover:bg-blue-200', border: 'border-blue-200', text: 'text-blue-900' },
+  { bg: 'bg-emerald-100 hover:bg-emerald-200', border: 'border-emerald-200', text: 'text-emerald-900' },
+  { bg: 'bg-violet-100 hover:bg-violet-200', border: 'border-violet-200', text: 'text-violet-900' },
+  { bg: 'bg-amber-100 hover:bg-amber-200', border: 'border-amber-200', text: 'text-amber-900' },
+  { bg: 'bg-rose-100 hover:bg-rose-200', border: 'border-rose-200', text: 'text-rose-900' },
+  { bg: 'bg-cyan-100 hover:bg-cyan-200', border: 'border-cyan-200', text: 'text-cyan-900' },
+  { bg: 'bg-lime-100 hover:bg-lime-200', border: 'border-lime-200', text: 'text-lime-900' },
+  { bg: 'bg-fuchsia-100 hover:bg-fuchsia-200', border: 'border-fuchsia-200', text: 'text-fuchsia-900' },
+  { bg: 'bg-orange-100 hover:bg-orange-200', border: 'border-orange-200', text: 'text-orange-900' },
+  { bg: 'bg-teal-100 hover:bg-teal-200', border: 'border-teal-200', text: 'text-teal-900' },
+];
+
 export default function WeekView({ events }: WeekViewProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [colorMap] = useState(new Map<string, number>());
+
+  // Fonction pour obtenir l'index de couleur pour un titre
+  const getColorIndex = (title: string) => {
+    const key = title.slice(-5); // Prendre les 5 dernières lettres
+    if (!colorMap.has(key)) {
+      colorMap.set(key, colorMap.size % EVENT_COLORS.length);
+    }
+    return colorMap.get(key) || 0;
+  };
 
   // Obtenir le début de la semaine (Lundi)
   const getWeekStart = (date: Date) => {
@@ -151,14 +175,17 @@ export default function WeekView({ events }: WeekViewProps) {
               {/* Événements */}
               {weekEvents.map((event, index) => {
                 const style = getEventStyle(event);
+                const colorIndex = getColorIndex(event.title);
+                const colors = EVENT_COLORS[colorIndex];
+                
                 return (
                   <div
                     key={index}
-                    className="absolute bg-blue-50 border border-blue-200 rounded p-1 text-xs overflow-hidden hover:bg-blue-100 transition-colors"
+                    className={`absolute rounded p-1 text-xs overflow-hidden transition-colors ${colors.bg} ${colors.border} border`}
                     style={style}
                   >
-                    <div className="font-semibold text-blue-900">{event.title}</div>
-                    <div className="text-blue-700">
+                    <div className={`font-semibold ${colors.text}`}>{event.title}</div>
+                    <div className={colors.text}>
                       {new Date(event.start).toLocaleTimeString('fr-FR', {
                         hour: '2-digit',
                         minute: '2-digit',

@@ -77,7 +77,7 @@ export default function Calendar() {
 
   const { categories, filterOptions, hierarchicalOptions } = extractUniqueCategories(events);
 
-  console.log("events", events.map((event) => parseDescriptionString(event.description)));
+  console.log("events", events);
 
   return (
     <div className="relative" onClick={() => setIsFilterPanelOpen(false)}>
